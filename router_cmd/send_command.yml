@@ -1,13 +1,9 @@
 ---
-- name: Gather info from MikroTik
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Get System Resource Info
-      community.routeros.command:
-        commands: /system resource print
+tasks:
+    - name: Test connection with raw command
+      raw: /system resource print
       register: output
 
-    - name: Display Output
+    - name: Show output
       debug:
         var: output.stdout_lines
