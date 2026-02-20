@@ -7,12 +7,14 @@
       community.routeros.command:
         commands: /ping 8.8.8.8 count=3
       register: ping_result
-      ignore_errors: true
 
-    - name: Record Results
-      set_fact:
-        connectivity_status: "{{ 'UP' if 'received=3' in ping_result.stdout[0] else 'DOWN' }}"
+    - name: Verify Connectivity
+      assert:
+        that:
+          - "'received=3' in ping_result.stdout[0]"
+        fail_msg: "CRITICAL: {{ inventory_hostname }} cannot reach 8.8.8.8!"
+        success_msg: "SUCCESS: {{ inventory_hostname }} has internet access."
 
     - name: Summary Table
       debug:
-        msg: "Router {{ inventory_hostname }} ({{ ansible_host }}) status is: {{ connectivity_status }}"
+        msg: "Router {{ inventory_hostname }} status is: {{ 'UP' if not ansible_failed_task else 'DOWN' }}"
