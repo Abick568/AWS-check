@@ -1,14 +1,13 @@
 ---
-- name: Run command on routers
-  hosts: routers
-  gather_facts: no
-  pre_tasks:
-    - name: Install required collections
-      ansible.builtin.command:
-        cmd: ansible-galaxy collection install -r /runner/project/router_cmd/requirements.yml
-      delegate_to: localhost
-      run_once: true
+- name: Gather info from MikroTik
+  hosts: all
+  gather_facts: false
   tasks:
-    - name: Execute command
-      ansible.netcommon.cli_command:
-        command: "{{ cmd }}"
+    - name: Get System Resource Info
+      community.routeros.command:
+        commands: /system resource print
+      register: output
+
+    - name: Display Output
+      debug:
+        var: output.stdout_lines
