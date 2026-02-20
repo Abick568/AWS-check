@@ -1,0 +1,18 @@
+---
+- name: Multi-Router Connectivity Audit
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Ping Google DNS
+      community.routeros.command:
+        commands: /ping 8.8.8.8 count=3
+      register: ping_result
+      ignore_errors: true
+
+    - name: Record Results
+      set_fact:
+        connectivity_status: "{{ 'UP' if 'received=3' in ping_result.stdout[0] else 'DOWN' }}"
+
+    - name: Summary Table
+      debug:
+        msg: "Router {{ inventory_hostname }} ({{ ansible_host }}) status is: {{ connectivity_status }}"
