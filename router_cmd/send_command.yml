@@ -1,9 +1,13 @@
 ---
-tasks:
-    - name: Test connection with raw command
-      raw: /system resource print
+- name: Run commands on MikroTik
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Get System Resource Info
+      community.routeros.command:
+        commands: /system resource print
       register: output
 
-    - name: Show output
+    - name: Display Output
       debug:
         var: output.stdout_lines
